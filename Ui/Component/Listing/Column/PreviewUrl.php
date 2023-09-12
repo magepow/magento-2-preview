@@ -6,10 +6,18 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
 use Magento\Store\Model\StoreManagerInterface;
 
 class PreviewUrl extends Column
 {
+
+    private function disablePreview($item)
+    {
+        return $item['status'] == Status::STATUS_DISABLED
+            || $item['visibility'] == Visibility::VISIBILITY_NOT_VISIBLE;
+    }
 
     /**
      * @var ProductRepositoryInterface
@@ -38,7 +46,7 @@ class PreviewUrl extends Column
     {
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as &$item) {
-                if (isset($item['entity_id'])) {
+                if (isset($item['entity_id']) && !$this->disablePreview($item)) {
                     $name = $this->getData('name');
                     $productId = $item['entity_id'];
                     $storeId   = (int) $this->getContext()->getRequestParam('store');
@@ -48,7 +56,7 @@ class PreviewUrl extends Column
                     }
 
                     $product   = $this->productRepository->getById($productId, false, $storeId);
-                    $productURL = $product->setStoreId(1)->getUrlModel()->getUrlInStore($product, ['_escape' => true]);
+                    $productURL = $product->setStoreId($storeId)->getUrlModel()->getUrlInStore($product, ['_escape' => true]);
                     $item[$name] = html_entity_decode('<a class="product_preview_' . $productId . '" href="' . $productURL . '">' . __('Preview') . '</a><script>document.querySelector(".product_preview_' . $productId . '").addEventListener("click", function (e) {e.stopPropagation();});</script>');
                 }
             }

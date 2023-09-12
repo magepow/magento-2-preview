@@ -2,10 +2,24 @@
 
 namespace Magepow\Preview\Block\Adminhtml\Product;
 
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
+
 class PreviewButton extends \Magento\Catalog\Block\Adminhtml\Product\Edit\Button\Generic
 {
+
+    private function disablePreview()
+    {
+        return $this->getProduct()->getStatus() == Status::STATUS_DISABLED
+            || $this->getProduct()->isReadonly()
+            || $this->getProduct()->getVisibility() == Visibility::VISIBILITY_NOT_VISIBLE;
+    }
+
     public function getButtonData()
     {
+        if($this->disablePreview()){    
+            return [];
+        }
         $product = $this->getProduct();
         if($product){
             $storeId    =  (int)$this->context->getRequestParam('store');
@@ -23,8 +37,6 @@ class PreviewButton extends \Magento\Catalog\Block\Adminhtml\Product\Edit\Button
                 'sort_order' => 10
             ];
         }
-
-        return [];
     }
 
 }

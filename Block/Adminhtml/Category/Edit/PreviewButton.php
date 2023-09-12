@@ -10,6 +10,13 @@ use Magento\Catalog\Block\Adminhtml\Category\AbstractCategory;
  */
 class PreviewButton extends AbstractCategory implements ButtonProviderInterface
 {
+
+    private function disablePreview()
+    {
+        return !$this->getCategory()->getIsActive()
+            || !$this->getCategory()->getLevel() > 1;
+    }
+
     /**
      * Clear Cache button
      *
@@ -17,36 +24,34 @@ class PreviewButton extends AbstractCategory implements ButtonProviderInterface
      */
     public function getButtonData()
     {
+        if ($this->disablePreview()) {
+            return [];
+        }
         $category = $this->getCategory();
         $categoryId = (int)$category->getId();
-        if ($categoryId && $category->getLevel() > 1) {
-
-            $storeId     = (int)$this->getRequest()->getParam('store');
-            if ($storeId) {
-                $url      = $category->getUrlInstance();
-                $storeUrl = $url->getUrl(Null, ['_scope' => $storeId]);
-                $storeUrl = explode('/', $storeUrl);
-                $categoryUrl = $category->getUrl();
-                $categoryUrl = explode('/', $categoryUrl);
-                $categoryUrl = array_unique(array_merge($storeUrl, $categoryUrl));
-                $categoryUrl = implode('/', $categoryUrl);
-            } else {
-                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-                $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
-                $storeId = $storeManager->getDefaultStoreView()->getId();
-                $category->setStoreId($storeId);
-                $categoryUrl = $category->getUrl();
-            }
-
-            return [
-                'label' => __('Preview'),
-                'class' => 'action-secondary preview',
-                // 'on_click' => "confirmSetLocation('Are you sure', '{$categoryUrl}')",
-                'on_click' => 'window.open( \'' . $categoryUrl . '\')',
-                'sort_order' => 10
-            ];
+        $storeId     = (int)$this->getRequest()->getParam('store');
+        if ($storeId) {
+            $url      = $category->getUrlInstance();
+            $storeUrl = $url->getUrl(Null, ['_scope' => $storeId]);
+            $storeUrl = explode('/', $storeUrl);
+            $categoryUrl = $category->getUrl();
+            $categoryUrl = explode('/', $categoryUrl);
+            $categoryUrl = array_unique(array_merge($storeUrl, $categoryUrl));
+            $categoryUrl = implode('/', $categoryUrl);
+        } else {
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
+            $storeId = $storeManager->getDefaultStoreView()->getId();
+            $category->setStoreId($storeId);
+            $categoryUrl = $category->getUrl();
         }
 
-        return [];
+        return [
+            'label' => __('Preview'),
+            'class' => 'action-secondary preview',
+            // 'on_click' => "confirmSetLocation('Are you sure', '{$categoryUrl}')",
+            'on_click' => 'window.open( \'' . $categoryUrl . '\')',
+            'sort_order' => 10
+        ];
     }
 }
