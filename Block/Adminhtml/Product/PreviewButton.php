@@ -22,18 +22,19 @@ class PreviewButton extends \Magento\Catalog\Block\Adminhtml\Product\Edit\Button
         }
         $product = $this->getProduct();
         if($product){
+            $previewProduct =  clone $product;
             $storeId    =  (int)$this->context->getRequestParam('store');
             if (!$storeId) {
                 $storeManager = \Magento\Framework\App\ObjectManager::getInstance()
                                 ->create(\Magento\Store\Model\StoreManagerInterface::class);
                 $storeId = $storeManager->getDefaultStoreView()->getId();
             }
-            $productUrl = $product->setStoreId($storeId)->getUrlModel()->getUrlInStore($product, ['_escape' => true]);
+            $previewUrl = $previewProduct->setStoreId($storeId)->getUrlModel()->getUrlInStore($previewProduct, ['_escape' => true]);
             return [
                 'label' => __('Preview'),
                 'class' => 'action-secondary preview',
-                // 'on_click' => "confirmSetLocation('Are you sure', '{$productUrl}')",
-                'on_click' => 'window.open( \'' . $productUrl . '\')',
+                // 'on_click' => "confirmSetLocation('Are you sure', '{$previewUrl}')",
+                'on_click' => 'window.open( \'' . $previewUrl . '\')',
                 'sort_order' => 10
             ];
         }

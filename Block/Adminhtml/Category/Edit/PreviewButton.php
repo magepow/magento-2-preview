@@ -14,7 +14,7 @@ class PreviewButton extends AbstractCategory implements ButtonProviderInterface
     private function disablePreview()
     {
         return !$this->getCategory()->getIsActive()
-            || !$this->getCategory()->getLevel() > 1;
+            || $this->getCategory()->getLevel() < 2;
     }
 
     /**
@@ -28,29 +28,28 @@ class PreviewButton extends AbstractCategory implements ButtonProviderInterface
             return [];
         }
         $category = $this->getCategory();
-        $categoryId = (int)$category->getId();
-        $storeId     = (int)$this->getRequest()->getParam('store');
+        $previewCategory = clone $category;
+        $storeId     = (int) $this->getRequest()->getParam('store');
         if ($storeId) {
-            $url      = $category->getUrlInstance();
-            $storeUrl = $url->getUrl(Null, ['_scope' => $storeId]);
-            $storeUrl = explode('/', $storeUrl);
-            $categoryUrl = $category->getUrl();
-            $categoryUrl = explode('/', $categoryUrl);
-            $categoryUrl = array_unique(array_merge($storeUrl, $categoryUrl));
-            $categoryUrl = implode('/', $categoryUrl);
+            $storeUrl   = $previewCategory->getUrlInstance()->getBaseUrl(['_scope' => $storeId]);
+            $storeUrl   = explode('/', $storeUrl);
+            $previewUrl = $previewCategory->getUrl();
+            $previewUrl = explode('/', $previewUrl);
+            $previewUrl = array_unique(array_merge($storeUrl, $previewUrl));
+            $previewUrl = implode('/', $previewUrl);
         } else {
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            $storeManager = $objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
-            $storeId = $storeManager->getDefaultStoreView()->getId();
-            $category->setStoreId($storeId);
-            $categoryUrl = $category->getUrl();
+            $storeId = \Magento\Framework\App\ObjectManager::getInstance()
+                        ->get(\Magento\Store\Model\StoreManagerInterface::class)
+                        ->getDefaultStoreView()->getId();
+            $previewCategory->setStoreId($storeId);
+            $previewUrl = $previewCategory->getUrl();
         }
 
         return [
             'label' => __('Preview'),
             'class' => 'action-secondary preview',
-            // 'on_click' => "confirmSetLocation('Are you sure', '{$categoryUrl}')",
-            'on_click' => 'window.open( \'' . $categoryUrl . '\')',
+            // 'on_click' => "confirmSetLocation('Are you sure', '{$previewUrl}')",
+            'on_click' => 'window.open( \'' . $previewUrl . '\')',
             'sort_order' => 10
         ];
     }
