@@ -57,7 +57,7 @@ class PreviewUrl extends Column
 
                     $product   = $this->productRepository->getById($productId, false, $storeId);
                     $productURL = $product->setStoreId($storeId)->getUrlModel()->getUrlInStore($product, ['_escape' => true]);
-                    $item[$name] = html_entity_decode('<a class="product_preview_' . $productId . '" href="' . $productURL . '">' . __('Preview') . '</a><script>document.querySelector(".product_preview_' . $productId . '").addEventListener("click", function (e) {e.stopPropagation();});</script>');
+                    $item[$name] = html_entity_decode('<a target="_blank" class="product_preview_' . $productId . '" href="' . $productURL . '">' . __('Preview') . '</a><script>document.querySelector(".product_preview_' . $productId . '").addEventListener("click", function (e) {e.stopPropagation();});</script>');
                 }
             }
         }
