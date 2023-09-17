@@ -8,4 +8,5 @@
 			</argument>
 		</arguments>
 	</type>
+	<preference for="Magento\Catalog\Block\Adminhtml\Category\Tab\Product" type="Magepow\Preview\Block\Adminhtml\Category\Tab\Product" />
 </config>
