@@ -43,7 +43,8 @@ class PreviewButton extends GenericButton implements ButtonProviderInterface
 
     private function disablePreview()
     {
-        return !$this->getPage()->getIsActive();
+        $page = $this->getPage();
+        return $page ? !$this->getPage()->getIsActive() : true;
     }
 
     /**
