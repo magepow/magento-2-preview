@@ -1,4 +1,4 @@
-# Magepow_Preview
+# Magento 2 Preview
 
 **Magepow Preview** is a Magento 2 module that provides quick access to the frontend view of products, categories, and CMS pages directly from the admin panel. Instead of navigating manually to the storefront, administrators get a "Preview" button on the edit pages, allowing them to instantly open the corresponding frontend page in a new tab.
 
@@ -18,19 +18,9 @@
 - PHP 7.3+ / 8.x (as supported by your Magento version)
 
 ## Installation
-
-### Manual Installation
-
-1. Create the directory `app/code/Magepow/Preview`.
-2. Copy the module files into that directory.
-3. Enable the module:
-
-```bash
-php bin/magento module:enable Magepow_Preview
-php bin/magento setup:upgrade
-php bin/magento setup:di:compile
-php bin/magento cache:flush
-```
+[![Latest Stable Version](https://poser.pugx.org/magepow/preview/v/stable)](https://packagist.org/packages/magepow/preview)
+[![Total Downloads](https://poser.pugx.org/magepow/preview/downloads)](https://packagist.org/packages/magepow/preview)
+[![Daily Downloads](https://poser.pugx.org/magepow/preview/d/daily)](https://packagist.org/packages/magepow/preview)
 
 ### Composer Installation
 
